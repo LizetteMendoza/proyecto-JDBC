@@ -45,8 +45,119 @@ public class StudentcontrollerServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		//list the students in MVC fashion
+		//read the "command" parameter
+		String theCommand = request.getParameter("command");
+		
+		if(theCommand == null) {
+			theCommand = "LIST";
+		}
+		
+		switch(theCommand) {
+		
+		//route to the appropriate method
+		case "LIST":
+				listStudents(request,response);
+				break;
+				
+		case "ADD":
+			addStudents(request,response);
+			break;
+			
+		case "LOAD":
+			try {
+				loadStudent(request,response);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "UPDATE":
+			try {
+				updateStudent(request,response);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		default:
+			//list the students in MVC fashion
+			listStudents(request,response);
+		}
+		
+		
+	}
+
+
+
+	private void updateStudent(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		//read student information from the form data
+		int id = Integer.parseInt(request.getParameter("studentId"));
+		String firstName = request.getParameter("firstName");
+		String lastName = request.getParameter("lastName");
+		String email = request.getParameter("email");
+		
+		//create a new student obj base on form data
+		Student theStudent = new Student(id,firstName,lastName,email);
+		
+		//perform update on DB
+		studentDbUtil.updateStudent(theStudent);
+		
+		//send them back to main view
 		listStudents(request,response);
+		
+	}
+
+
+
+	private void loadStudent(HttpServletRequest request, HttpServletResponse response){
+		// read student id from form data
+		
+		String theStudentId = request.getParameter("studentId");
+		
+		//get student from database (DB util)
+		Student theStudent;
+		try {
+			theStudent = StudentDbUtil.getStudent(theStudentId);
+			
+			//place student in the request attribute
+			request.setAttribute("THE_STUDENT", theStudent);
+			
+			//send to jps page: update-student-from.jsp
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/update-student-form.jsp");
+			dispatcher.forward(request, response);
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("error en metodo load");
+		}
+	
+		
+		
+		
+	}
+
+
+
+	private void addStudents(HttpServletRequest request, HttpServletResponse response) {
+		
+		//read student info from form data
+		String firstName = request.getParameter("firstName");
+		String lastName = request.getParameter("lastName");
+		String email = request.getParameter("email");
+		
+		
+		//create a new student object
+		Student theStudent = new Student(firstName,lastName,email);
+		
+		
+		//add the student to the database
+		studentDbUtil.addStudent(theStudent);
+		
+		//send back to main
+		listStudents(request, response);
 		
 	}
 
