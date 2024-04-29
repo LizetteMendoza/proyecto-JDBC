@@ -81,12 +81,34 @@ public class StudentcontrollerServlet extends HttpServlet {
 			}
 			break;
 			
+		case "DELETE":
+			try {
+				deleteStudent(request,response);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		default:
 			//list the students in MVC fashion
 			listStudents(request,response);
 		}
 		
 		
+	}
+
+
+
+	private void deleteStudent(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		//read student id from the form data
+		String StudentId = request.getParameter("studentId");
+		
+		//delete student from DB
+		studentDbUtil.deletStudent(StudentId);
+		
+		//send the user back to students page
+		listStudents(request,response);
 	}
 
 

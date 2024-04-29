@@ -223,6 +223,44 @@ public class StudentDbUtil {
 		}
 	}
 
+	public void deletStudent(String studentId) {
+		Connection myConn= null;
+		PreparedStatement myStmt = null;
+		
+		try{
+		 //convert student id to int
+		int theStudentId = Integer.parseInt(studentId);
+		
+		//get DB connection
+		myConn = dataSource.getConnection();
+		
+		
+		//Create SQL update statement
+		String sql = "delete from student where id=?";
+		
+		
+		//prepare statement
+		myStmt = myConn.prepareStatement(sql);
+		
+		//set parameters
+		myStmt.setInt(1, theStudentId);
+		
+		
+		//execute SQL statement
+		myStmt.execute();
+		
+		
+		
+		
+		}catch(Exception e) {
+			System.out.println("error en delete method");
+			
+		}finally{
+			close(myConn,myStmt);
+		}
+		
+	}
+
 	
 
 }
